@@ -1,3 +1,4 @@
+// aaa
 function findValueByKey(obj, keyToFind) {
   let result = null;
   function search(obj) {
