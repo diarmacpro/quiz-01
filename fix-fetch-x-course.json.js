@@ -4,22 +4,6 @@ function ckArr(data) {
   return rsB.length === 1 ? rsB[0] : rsB;
 }
 
-function uniqClean(arr) {
-  const cleaned = _.uniq(
-    arr
-      .filter(n => typeof n === 'string')
-      .map(n => n.trim().toLowerCase())
-  );
-  
-  return cleaned.length === 1 ? cleaned[0] : cleaned;
-}
-
-function toArrayIfNeeded(value) {
-  if (Array.isArray(value)) return value;
-  if (typeof value === 'string') return [value];
-  return [];
-}
-
 function findX(data, path) {
   const value = _.get(data, path);
 
@@ -81,7 +65,7 @@ axios.get('https://diarcourse-b4b67-default-rtdb.asia-southeast1.firebasedatabas
       return merged;
     });
 
-    console.log(dtRes);
+    // console.log(dtRes);
     return dtRes;
   })
   .then(dataA => {
@@ -115,7 +99,7 @@ axios.get('https://diarcourse-b4b67-default-rtdb.asia-southeast1.firebasedatabas
         form: (v.form ? v.form.length : v.form)
       }
     })
-    console.log(dtRs);
+    // console.log(dtRs);
     return dtRs;
   })
   .then(dataB => {
@@ -142,7 +126,6 @@ axios.get('https://diarcourse-b4b67-default-rtdb.asia-southeast1.firebasedatabas
         DayOfWeek: ckArr(v.DayOfWeek),
         LocalTime: ckArr(v.LocalTime),
         stamp: ckArr(v.stamp),
-        form: v.form || '',
       };
     });
     console.log(dtRsA);
