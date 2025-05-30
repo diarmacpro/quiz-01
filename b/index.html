@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Blog - Powered by Alpine.js & Storage Buckets</title>
+  <meta name="description" content="A modern blog website using Alpine.js, Tailwind CSS, and browser Storage Buckets">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/npm/lucide-icons/icons/feather.svg" />
+
+  <!-- Cache and version management -->
+  <script>
+    // Global store for cached content
+    window.cachedContent = {};
+    window.VERSION_KEY = 'app-version';
+    window.CURRENT_VERSION = '1.0.0';
+    window.JSONBIN_API_URL = 'https://api.jsonbin.io/v3/b/683922298561e97a501d56f6';
+    window.JSONBIN_MASTER_KEY = '$2a$10$kxZTFqM7lWIWuqby/NOPo.3AWCvRp94VtcrCkVanjlQkN3vcS0L2S';
+  </script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <div x-data="app()" x-init="initApp()" class="flex-grow flex flex-col">
+    <!-- Loading screen -->
+    <div x-show="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+      <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        <p class="mt-4" x-text="loadingMessage">Loading resources...</p>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
+            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"></path>
+            <line x1="16" y1="8" x2="2" y2="22"></line>
+            <line x1="17.5" y1="15" x2="9" y2="15"></line>
+          </svg>
+          <span class="font-bold text-xl text-blue-600">ModernBlog</span>
+        </div>
+        <nav>
+          <ul class="flex space-x-6">
+            <li><a href="#" @click.prevent="setActiveView('home')" :class="activeView === 'home' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600'">Home</a></li>
+            <li><a href="#" @click.prevent="setActiveView('blog')" :class="activeView === 'blog' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600'">Blog</a></li>
+            <li><a href="#" @click.prevent="setActiveView('about')" :class="activeView === 'about' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-blue-600'">About</a></li>
+            <li><a href="#" @click.prevent="checkForUpdates(true)" class="text-gray-600 hover:text-blue-600 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
+              Update
+            </a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+      <!-- Home View -->
+      <div x-show="activeView === 'home'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <section class="mb-12">
+          <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-8 text-white mb-8">
+            <h1 class="text-4xl font-bold mb-4">Welcome to ModernBlog</h1>
+            <p class="text-xl mb-6">A modern website with Tailwind CSS and Alpine.js, powered by browser Storage Buckets for lightning-fast performance.</p>
+            <button @click="setActiveView('blog')" class="bg-white text-blue-700 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition duration-200">Read Blog Posts</button>
+          </div>
+          
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition duration-200">
+              <div class="text-blue-600 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Lightning Fast</h3>
+              <p class="text-gray-600">Content loads instantly from browser storage with automatic synchronization.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition duration-200">
+              <div class="text-blue-600 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16V4a2 2 0 0 1 2-2h11"/><path d="M5 14H4a2 2 0 1 0 0 4h1"/><path d="M22 18H11a2 2 0 1 0 0 4h11"/><path d="M15 12V5a2 2 0 0 0-2-2h-1"/><path d="M8 12v7"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Offline Ready</h3>
+              <p class="text-gray-600">Access previously viewed content even when you're offline.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition duration-200">
+              <div class="text-blue-600 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16.98h-5.99c-1.66 0-3.3-.46-4.72-1.34"></path><path d="M5.41 10.84A5.97 5.97 0 0 0 4 14.44"></path><path d="M2.24 6.27A6 6 0 0 0 2 8c0 1.68.7 3.2 1.82 4.27"></path><path d="M8.68 3.95C9.05 3.33 9.95 3 11 3h11.19"></path><path d="M18 10a6.97 6.97 0 0 0 3 5.84"></path><path d="M10.09 7.87c.18.37.29.77.29 1.19 0 1.66-1.35 3-3 3"></path><path d="m11 14-.83 5h4.62l3.8-7.7"></path></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Always Updated</h3>
+              <p class="text-gray-600">Automatic version checking ensures you always have the latest content.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Blog View -->
+      <div x-show="activeView === 'blog'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <h1 class="text-3xl font-bold mb-8">Blog Posts</h1>
+        
+        <div x-show="!blogPosts.length" class="text-center py-12">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-4"></div>
+          <p>Loading blog posts...</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <template x-for="post in blogPosts" :key="post.id">
+            <div class="bg-white rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-300">
+              <img x-bind:src="post.image || 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=800'" class="w-full h-48 object-cover" x-bind:alt="post.title">
+              <div class="p-6">
+                <div class="text-xs text-gray-500 mb-2" x-text="formatDate(post.date)"></div>
+                <h3 class="text-xl font-bold mb-2" x-text="post.title"></h3>
+                <p class="text-gray-600 mb-4" x-text="truncate(post.excerpt, 120)"></p>
+                <button @click="viewPost(post.id)" class="text-blue-600 font-medium hover:text-blue-800 transition duration-200 flex items-center">
+                  Read More
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Post Detail View -->
+      <div x-show="activeView === 'post'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <button @click="setActiveView('blog')" class="flex items-center text-blue-600 hover:text-blue-800 mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><path d="m15 18-6-6 6-6"></path></svg>
+          Back to Posts
+        </button>
+        
+        <div x-show="currentPost">
+          <img x-bind:src="currentPost?.image || 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=1200'" class="w-full h-64 object-cover rounded-xl mb-6" x-bind:alt="currentPost?.title">
+          
+          <div class="max-w-3xl mx-auto">
+            <h1 class="text-3xl font-bold mb-4" x-text="currentPost?.title"></h1>
+            <div class="flex items-center text-gray-500 mb-8">
+              <span x-text="formatDate(currentPost?.date)"></span>
+              <span class="mx-2">•</span>
+              <span x-text="currentPost?.author || 'Admin'"></span>
+            </div>
+            
+            <div class="prose lg:prose-lg max-w-none" x-html="currentPost?.content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- About View -->
+      <div x-show="activeView === 'about'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-3xl mx-auto">
+          <h1 class="text-3xl font-bold mb-6">About This Website</h1>
+          
+          <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4">Technical Stack</h2>
+            <ul class="list-disc ml-6 space-y-2">
+              <li><strong>Frontend:</strong> Tailwind CSS for styling and Alpine.js for interactivity</li>
+              <li><strong>Caching:</strong> Browser Storage Buckets API for client-side caching</li>
+              <li><strong>Data Storage:</strong> jsonbin.io for permanent data storage</li>
+              <li><strong>Version Control:</strong> Hash-based version checking for content updates</li>
+            </ul>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">How It Works</h2>
+            <p class="mb-4">This website uses modern browser APIs to create a fast, efficient user experience:</p>
+            <ol class="list-decimal ml-6 space-y-2">
+              <li>When you first visit, we cache all necessary resources in your browser's storage buckets</li>
+              <li>Content is loaded instantly from local storage when available</li>
+              <li>The system periodically checks for content updates by comparing version hashes</li>
+              <li>When updates are available, content is automatically refreshed from the server</li>
+              <li>This approach provides near-instant loading and offline capabilities</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="mb-4 md:mb-0">
+            <div class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400">
+                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"></path>
+                <line x1="16" y1="8" x2="2" y2="22"></line>
+                <line x1="17.5" y1="15" x2="9" y2="15"></line>
+              </svg>
+              <span class="font-bold">ModernBlog</span>
+            </div>
+            <p class="text-sm text-gray-400 mt-2">Powered by Storage Buckets and Alpine.js</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-400">© 2025 ModernBlog. All rights reserved.</p>
+            <div class="mt-2">
+              <button @click="checkForUpdates(true)" class="text-sm text-blue-400 hover:text-blue-300 transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
+                Check for Updates
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Alpine.js from CDN (will be cached) -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
+  
+  <!-- Tailwind CSS from CDN (will be cached) -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- Main app script -->
+  <script src="app.js"></script>
+</body>
+</html>
