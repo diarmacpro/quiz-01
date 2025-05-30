@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@3.0.2/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" integrity="sha256-qXBd/EfAdjOA2FGrGAG+b3YBn2tn5A6bhz+LSgYD96k=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.9.0/dist/axios.min.js" integrity="sha256-zKmDh+GEVvPxPFFi3MzpYO1/ZsLgeJ1sFSz2oSvBG6Y=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" integrity="sha256-qXBd/EfAdjOA2FGrGAG+b3YBn2tn5A6bhz+LSgYD96k=" crossorigin="anonymous"></script>
+  <script src="./script-a.js"></script>
+  <script src="./hash.js"></script>
+  <script type="module">
+		import { FirestoreClient } from './fs-a.js';
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+		import { getFirestore } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+		const firebaseConfig = {
+			apiKey: "AIzaSyCCNrOvjRmz3-xg5ndIrFjIGgNifXmh8c0",
+			authDomain: "yanjirogu.firebaseapp.com",
+			projectId: "yanjirogu",
+		};
+
+		const app = initializeApp(firebaseConfig);
+		const db = getFirestore(app);
+		const client = new FirestoreClient(db);
+
+		window.firebase = { app, db };
+		window.client = new FirestoreClient(db);
+  </script>
+  <script>
+  </script>
+</body>
+</html>

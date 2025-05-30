@@ -1,0 +1,23 @@
+uid pada dokumen di setiap pengguna, harus diganti dengan uid dari pengguna yang berasal dari auth
+supaya mempercepat proses dan menghemat sumber daya
+
+async function migrateDocToUid(db, oldDocId, uid) {
+  const oldDocRef = doc(db, "users", oldDocId);
+  const newDocRef = doc(db, "users", uid);
+
+  // Ambil data dari dokumen lama
+  const oldDocSnap = await getDoc(oldDocRef);
+  if (!oldDocSnap.exists()) {
+    console.error("Dokumen lama tidak ditemukan");
+    return;
+  }
+  const data = oldDocSnap.data();
+
+  // Salin data ke dokumen baru dengan ID UID
+  await setDoc(newDocRef, data);
+
+  // Hapus dokumen lama
+  await deleteDoc(oldDocRef);
+
+  console.log("Migrasi dokumen selesai");
+}

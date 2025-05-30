@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EmailJS v4+ Example</title>
+</head>
+<body>
+
+<form id="contact-form">
+  <input type="text" name="name" placeholder="Nama" required /><br /><br />
+  <input type="email" name="email" placeholder="Email Kamu" required /><br /><br />
+  <textarea name="message" placeholder="Pesan" required></textarea><br /><br />
+  <button type="submit">Kirim</button>
+</form>
+
+<script type="module">
+  import { send } from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+
+  const form = document.getElementById('contact-form');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const templateParams = {
+      name: form.name.value,
+      email: form.email.value,
+      message: form.message.value
+    };
+
+    send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams, 'aA3d-QaAKFnv-WL7d')
+      .then((response) => {
+        alert('Email berhasil dikirim!');
+        form.reset();
+      })
+      .catch((error) => {
+        alert('Gagal mengirim email: ' + JSON.stringify(error));
+      });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Firebase Auth</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCNrOvjRmz3-xg5ndIrFjIGgNifXmh8c0",
+      authDomain: "yanjirogu.firebaseapp.com",
+      projectId: "yanjirogu",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const showForm = (formId) => {
+      document.querySelectorAll('.form').forEach(form => form.classList.add('hidden'));
+      document.getElementById(formId).classList.remove('hidden');
+    };
+
+    window.showForm = showForm;
+
+    window.register = async () => {
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value.trim();
+      if (!email || !password || password.length < 6) {
+        alert('Email valid & password minimal 6 karakter!');
+        return;
+      }
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(userCredential.user);
+        alert('Pendaftaran berhasil! Silakan cek email untuk verifikasi.');
+        showForm('loginForm');
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    window.login = async () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!email || !password) {
+        alert('Isi email dan password!');
+        return;
+      }
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        if (!userCredential.user.emailVerified) {
+          alert('Email belum diverifikasi!');
+          await signOut(auth);
+          return;
+        }
+        alert('Login berhasil!');
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    window.resetPassword = async () => {
+      const email = document.getElementById('resetEmail').value.trim();
+      if (!email) {
+        alert('Isi email!');
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert('Email reset password telah dikirim!');
+        showForm('loginForm');
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  </script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <!-- Login Form -->
+    <div id="loginForm" class="form">
+      <h2 class="text-2xl font-bold mb-4">Login</h2>
+      <input id="loginEmail" type="email" placeholder="Email" class="border p-2 w-full mb-2">
+      <input id="loginPassword" type="password" placeholder="Password" class="border p-2 w-full mb-2">
+      <button onclick="login()" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
+      <div class="flex justify-between mt-2">
+        <button onclick="showForm('registerForm')" class="text-sm text-blue-600">Register</button>
+        <button onclick="showForm('resetForm')" class="text-sm text-blue-600">Lupa Password?</button>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="form hidden">
+      <h2 class="text-2xl font-bold mb-4">Register</h2>
+      <input id="regEmail" type="email" placeholder="Email" class="border p-2 w-full mb-2">
+      <input id="regPassword" type="password" placeholder="Password" class="border p-2 w-full mb-2">
+      <button onclick="register()" class="bg-green-500 text-white px-4 py-2 rounded w-full">Register</button>
+      <div class="flex justify-between mt-2">
+        <button onclick="showForm('loginForm')" class="text-sm text-blue-600">Login</button>
+      </div>
+    </div>
+
+    <!-- Reset Password Form -->
+    <div id="resetForm" class="form hidden">
+      <h2 class="text-2xl font-bold mb-4">Reset Password</h2>
+      <input id="resetEmail" type="email" placeholder="Email" class="border p-2 w-full mb-2">
+      <button onclick="resetPassword()" class="bg-yellow-500 text-white px-4 py-2 rounded w-full">Kirim Email Reset</button>
+      <div class="flex justify-between mt-2">
+        <button onclick="showForm('loginForm')" class="text-sm text-blue-600">Login</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

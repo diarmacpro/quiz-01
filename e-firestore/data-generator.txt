@@ -1,0 +1,31 @@
+
+    /*
+    var dtA = {};
+    gtDtUrl('https://users-data.diarcourse.workers.dev/?x=data', async (error, data) => {
+      if (error) {
+        console.error('Terjadi error:', error);
+      } else {
+        // Map untuk buat array dengan properti unik
+        const withUnik = _.map(data.data, v => ({
+          ...v,
+          unik: `${v.email} ${v.whatsapp}`
+        }));
+
+        // Proses hash setiap properti unik secara async
+        const withHash = await Promise.all(
+          withUnik.map(async (item) => {
+            const pwd = await hashString(item.unik);
+            const hashPwd = await hashPassword(pwd);
+            return { ...item, pwd, hashPwd };
+          })
+        );
+
+        dtA = withHash;
+        console.log(dtA);
+      }
+    });
+
+    // _.map(dtA,(v,k)=>{
+    //     client.add('users',v,d=>console.log(d));
+    // })
+    */
